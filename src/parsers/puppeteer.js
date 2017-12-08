@@ -3,7 +3,15 @@ const Generic = require('./generic')
 const retry = require('bluebird-retry')
 
 module.exports = class Puppeteer extends Generic {
-  constructor ({ retries, retryInterval, concurrency, rateLimit, backoff, emit }) {
+  constructor ({
+    concurrency,
+    rateLimit,
+    retries,
+    retryInterval,
+    backoff,
+    log,
+    emit
+  }) {
     super({
       parser: puppeteer,
       concurrency,
@@ -11,6 +19,7 @@ module.exports = class Puppeteer extends Generic {
       retries,
       retryInterval,
       backoff,
+      log,
       emit
     })
   }
@@ -20,7 +29,7 @@ module.exports = class Puppeteer extends Generic {
     this.callback = callback
     this.browser = await puppeteer.launch()
 
-    this.log && this.logger.startTimer()
+    const timerId = this.log && this.logger.startTimer()
     try {
       result = await this.callback(this.browser)
       this.emit('once', result)
@@ -28,7 +37,7 @@ module.exports = class Puppeteer extends Generic {
     } catch (err) {
       this.emit('error', err)
     }
-    this.log && this.logger.stopTimer()
+    this.log && this.logger.stopTimer(timerId)
 
     await this.browser.close()
     return result
@@ -49,7 +58,7 @@ module.exports = class Puppeteer extends Generic {
   async _crawl (data) {
     const page = await this.browser.newPage()
 
-    this.log && this.logger.startTimer()
+    const timerId = this.log && this.logger.startTimer()
     try {
       const result = await retry(this.callback, {
         args: [data, page, this.browser],
@@ -63,7 +72,7 @@ module.exports = class Puppeteer extends Generic {
     } catch (err) {
       this.emit('error', err)
     }
-    this.log && this.logger.stopTimer()
+    this.log && this.logger.stopTimer(timerId)
 
     await page.close()
     if (this.rateLimit) {

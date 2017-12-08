@@ -1,3 +1,5 @@
+const crypto = require('crypto')
+
 module.exports = class Logger {
   constructor () {
     this.success = []
@@ -5,11 +7,13 @@ module.exports = class Logger {
   }
 
   startTimer () {
-    console.time('jcrawler')
+    const id = crypto.randomBytes(3).toString('hex')
+    console.time('jcrawler_' + id)
+    return id
   }
 
-  stopTimer () {
-    console.timeEnd('jcrawler')
+  stopTimer (id) {
+    console.timeEnd('jcrawler_' + id)
   }
 
   success (mensagem) {

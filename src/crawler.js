@@ -1,9 +1,9 @@
 const EventEmitter = require('events')
 
 const parsers = {
-  cheerio: require('./parsers/Cheerio'),
-  puppeteer: require('./parsers/Puppeteer'),
-  osmosis: require('./parsers/Osmosis')
+  cheerio: require('./parsers/cheerio'),
+  puppeteer: require('./parsers/puppeteer'),
+  osmosis: require('./parsers/osmosis')
 }
 
 module.exports = class Crawler extends EventEmitter {

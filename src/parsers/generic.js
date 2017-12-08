@@ -1,5 +1,5 @@
 const retry = require('bluebird-retry')
-const Logger = require('./logger')
+const Logger = require('../logger')
 
 module.exports = class Generic {
   constructor ({
@@ -27,7 +27,7 @@ module.exports = class Generic {
     let result
     this.callback = callback
 
-    this.log && this.logger.startTimer()
+    const timerId = this.log && this.logger.startTimer()
     try {
       result = await this.callback(this.parser)
       this.emit('once', result)
@@ -35,7 +35,7 @@ module.exports = class Generic {
     } catch (err) {
       this.emit('error', err)
     }
-    this.log && this.logger.stopTimer()
+    this.log && this.logger.stopTimer(timerId)
 
     if (this.rateLimit) {
       await Promise.delay(this.rateLimit)
@@ -52,6 +52,7 @@ module.exports = class Generic {
   }
 
   async _crawl (data) {
+    const timerId = this.log && this.logger.startTimer()
     try {
       const result = await retry(this.callback, {
         args: [data, this.parser],
@@ -65,6 +66,8 @@ module.exports = class Generic {
     } catch (err) {
       this.emit('error', err)
     }
+    this.log && this.logger.stopTimer(timerId)
+
     if (this.rateLimit) {
       await Promise.delay(this.rateLimit)
     }
