@@ -1,0 +1,37 @@
+{
+  "name": "jcrawler",
+  "version": "0.1.0",
+  "description": "Asynchronous control flow wrapper to crawl websites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:danielfsousa/jcrawler.git"
+  },
+  "keywords": [
+    "crawler",
+    "async",
+    "await",
+    "promises",
+    "web scraping",
+    "scraper",
+    "puppeteer",
+    "cheerio",
+    "osmosis"
+  ],
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "bluebird-retry": "^0.11.0",
+    "cheerio": "^1.0.0-rc.2",
+    "mkdirp": "^0.5.1",
+    "osmosis": "^1.1.5",
+    "puppeteer": "^0.13.0"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3"
+  },
+  "author": "Daniel Sousa <sousa.dfs@gmail.com>",
+  "license": "MIT"
+}
