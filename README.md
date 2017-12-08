@@ -11,7 +11,7 @@ Asynchronous control flow wrapper to crawl websites
 ## Usage
 
 ```javascript
-  (async => {
+  (async () => {
     const jcrawler = require('jcrawler')
 
     const crawler = jcrawler({
@@ -36,7 +36,7 @@ Asynchronous control flow wrapper to crawl websites
       await page.click("input[value=\"I'm Feeling Lucky\"]")
       await page.screenshot({ path: `${fruit}.png`) })
     })
-  })
+  })()
 ```
 
 ## License
