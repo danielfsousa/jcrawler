@@ -1,5 +1,7 @@
 # jcrawler
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/danielfsousa/jcrawler.svg)](https://greenkeeper.io/)
+
 Asynchronous control flow wrapper to crawl websites
 
 ## How to Install
