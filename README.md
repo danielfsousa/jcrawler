@@ -11,26 +11,28 @@ Asynchronous control flow wrapper to crawl websites
 ## Usage
 
 ```javascript
-  (async () => {
-    const jcrawler = require('jcrawler')
+  const jcrawler = require('jcrawler')
 
+  (async () => {
     const crawler = jcrawler({
       parser: 'puppeteer', // puppeteer, cheerio or osmosis
       concurrency: 2,
-      rateLimit: ms('1s'),
+      rateLimit: 1000, // 1 second
       retries: 5,
-      retryInterval: ms('1s'),
-      backoff: 2,
+      retryInterval: 1000, // 1 second
+      backoff: 2, // multiplies the retryInterval for each retry
       log: true
     })
 
     crawler
-      .on('data', data => console.log(data)) // events: each, once, data and error
+      .on('data', data => console.log(data)) // events: data, error and end
       .on('error', err => console.error(err))
+      .on('end', (data, results) => console.log(results.timer.time))
 
     const fruits = ['apple', 'banana', 'orange']
 
-    const results = await crawler.each(fruits, async (fruit, page, browser) => { // using puppeteer
+    await crawler.each(fruits, async (browser, page, fruit) => {
+      // using puppeteer
       await page.goto('http://google.com')
       await page.type("input[title='Search']", fruit)
       await page.click("input[value=\"I'm Feeling Lucky\"]")

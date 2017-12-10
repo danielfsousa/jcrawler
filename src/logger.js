@@ -1,39 +1,61 @@
 const crypto = require('crypto')
+const perfy = require('perfy')
 
 module.exports = class Logger {
   constructor () {
-    this.success = []
+    this.successes = []
     this.errors = []
+    this.totalTimer = {}
   }
 
-  startTimer () {
-    const id = crypto.randomBytes(3).toString('hex')
-    console.time('jcrawler_' + id)
+  startTimer (name) {
+    const random = crypto.randomBytes(3).toString('hex')
+    const id = name || random
+    perfy.start(id)
     return id
   }
 
   stopTimer (id) {
-    console.timeEnd('jcrawler_' + id)
+    return perfy.end(id)
   }
 
-  success (mensagem) {
-    this.success.push(mensagem)
+  setTotalTimer (totalTimer) {
+    this.totalTimer = totalTimer
   }
 
-  error (mensagem) {
-    this.errors.push(mensagem)
+  printTimer (timer, funcname = 'jcrawler') {
+    console.log(`${funcname}_${timer.summary}`)
+    perfy.destroy(timer.name)
+  }
+
+  success (name, timer, data) {
+    this.successes.push({ name, timer, data })
+  }
+
+  error (name, timer, data) {
+    this.errors.push({ name, timer, data })
+  }
+
+  results () {
+    return {
+      successes: this.successes,
+      errors: this.errors,
+      totalTimer: this.totalTimer
+    }
   }
 
   print () {
-    if (this.success.length > 0) {
-      console.log('\n> SUCESSO:')
-      this.success.forEach((sucesso, index) => console.log(`  ${index + 1}. ${sucesso}`))
+    console.log(`\n> ${this.totalTimer.summary}`)
+
+    if (this.successes.length > 0) {
+      console.log('\n> SUCCESS:')
+      this.successes.forEach((s, index) => console.log(`  ${s.name}_${s.timer.summary}`))
       console.log()
     }
 
     if (this.errors.length > 0) {
-      console.log('\n> ERRO:')
-      this.errors.forEach((erro, index) => console.log(`  ${index + 1}. ${erro}`))
+      console.log('\n> ERROR:')
+      this.errors.forEach((e, index) => console.log(`  ${e.name}_${e.timer.summary}`))
     }
   }
 }

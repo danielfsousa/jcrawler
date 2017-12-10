@@ -3,76 +3,97 @@ const Generic = require('./generic')
 const retry = require('bluebird-retry')
 
 module.exports = class Puppeteer extends Generic {
-  constructor ({
-    concurrency,
-    rateLimit,
-    retries,
-    retryInterval,
-    backoff,
-    log,
-    emit
-  }) {
+  constructor (options) {
     super({
       parser: puppeteer,
-      concurrency,
-      rateLimit,
-      retries,
-      retryInterval,
-      backoff,
-      log,
-      emit
+      ...options
     })
   }
 
   async once (callback) {
-    let result
+    let data
+    let success
     this.callback = callback
     this.browser = await puppeteer.launch()
+    const page = await this.browser.newPage()
 
-    const timerId = this.log && this.logger.startTimer()
+    const timerId = this.logger.startTimer()
     try {
-      result = await this.callback(this.browser)
-      this.emit('once', result)
-      this.emit('data', result)
+      data = await this.callback(this.browser, page)
+      success = true
+      this.emit('data', data)
     } catch (err) {
       this.emit('error', err)
     }
-    this.log && this.logger.stopTimer(timerId)
+    const timer = this.logger.stopTimer(timerId)
+    this.log && this.logger.printTimer(timer, callback.name)
 
-    await this.browser.close()
-    return result
-  }
+    if (success) {
+      this.logger.success(this.callback.name, timer, data)
+    } else {
+      this.logger.error(this.callback.name, timer, data)
+    }
 
-  async each (data, callback) {
-    this.results = []
-    this.callback = callback
-    this.browser = await puppeteer.launch()
-    await Promise.map(data, d => this._crawl(d), { concurrency: this.concurrency })
+    this.logger.setTotalTimer(timer)
+    const results = this.logger.results()
+    this.emit('end', data, results)
+    this.log && this.logger.print()
+
+    await page.close()
     await this.browser.close()
+
     if (this.rateLimit) {
       await Promise.delay(this.rateLimit)
     }
-    return this.results
+
+    return data
   }
 
-  async _crawl (data) {
+  async each (input, callback) {
+    this.data = []
+    this.callback = callback
+    this.browser = await puppeteer.launch()
+
+    this.logger.startTimer('TOTAL_TIMER')
+    await Promise.map(input, d => this._crawl(d), { concurrency: this.concurrency })
+    const totalTimer = this.logger.stopTimer('TOTAL_TIMER')
+    this.logger.setTotalTimer(totalTimer)
+
+    const results = this.logger.results()
+    this.emit('end', this.data, results)
+    this.log && this.logger.print()
+
+    await this.browser.close()
+    return this.data
+  }
+
+  async _crawl (input) {
+    let success
+    let data
     const page = await this.browser.newPage()
 
-    const timerId = this.log && this.logger.startTimer()
+    const timerId = this.logger.startTimer()
     try {
-      const result = await retry(this.callback, {
-        args: [data, page, this.browser],
+      data = await retry(this.callback, {
+        args: [this.browser, page, input],
         max_tries: this.tries,
         interval: this.retryInterval,
         backoff: this.backoff
       })
-      this.emit('each', result)
-      this.emit('data', result)
-      this.results.push(result)
+      success = true
+      this.emit('data', data)
+      this.data.push(data)
     } catch (err) {
       this.emit('error', err)
     }
-    this.log && this.logger.stopTimer(timerId)
+    const timer = this.logger.stopTimer(timerId)
+    this.log && this.logger.printTimer(timer, this.callback.name)
+
+    if (success) {
+      this.logger.success(this.callback.name, timer, data)
+    } else {
+      this.logger.error(this.callback.name, timer, data)
+    }
 
     await page.close()
     if (this.rateLimit) {
