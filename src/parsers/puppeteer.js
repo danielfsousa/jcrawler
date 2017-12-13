@@ -76,7 +76,7 @@ module.exports = class Puppeteer extends Generic {
     try {
       data = await retry(this.callback, {
         args: [this.browser, page, input],
-        max_tries: this.tries,
+        max_tries: this.retries,
         interval: this.retryInterval,
         backoff: this.backoff
       })
