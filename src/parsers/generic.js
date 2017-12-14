@@ -77,10 +77,10 @@ module.exports = class Generic {
         backoff: this.backoff
       })
       success = true
-      this.emit('data', data)
+      this.emit('data', data, input)
       this.results.push(data)
     } catch (err) {
-      this.emit('error', err)
+      this.emit('error', err, input)
     }
     const timer = this.logger.stopTimer(timerId)
     this.log && this.logger.printTimer(timer, this.callback.name)

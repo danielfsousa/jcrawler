@@ -1,4 +1,9 @@
 
+1.0.2 / 2017-12-14
+==================
+
+  * The events 'data' and 'err' of jcrawler.each() now emits the active element of the iteration as the second argument
+
 1.0.1 / 2017-12-13
 ==================
 
