@@ -17,15 +17,17 @@ module.exports = class Puppeteer extends Generic {
     this.browser = await puppeteer.launch()
     const page = await this.browser.newPage()
 
+    let timer
     const timerId = this.logger.startTimer()
     try {
       data = await this.callback(this.browser, page)
       success = true
-      this.emit('data', data)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('data', data, timer)
     } catch (err) {
-      this.emit('error', err)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('error', err, timer)
     }
-    const timer = this.logger.stopTimer(timerId)
     this.log && this.logger.printTimer(timer, callback.name)
 
     if (success) {
@@ -74,6 +76,7 @@ module.exports = class Puppeteer extends Generic {
     this.emit('each', input)
     const page = await this.browser.newPage()
 
+    let timer
     const timerId = this.logger.startTimer()
     try {
       data = await retry(this.callback, {
@@ -83,12 +86,13 @@ module.exports = class Puppeteer extends Generic {
         backoff: this.backoff
       })
       success = true
-      this.emit('data', data, input)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('data', data, input, timer)
       this.data.push(data)
     } catch (err) {
-      this.emit('error', err, input)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('error', err, input, timer)
     }
-    const timer = this.logger.stopTimer(timerId)
     this.log && this.logger.printTimer(timer, this.callback.name)
 
     if (success) {

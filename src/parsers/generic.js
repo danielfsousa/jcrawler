@@ -19,15 +19,17 @@ module.exports = class Generic {
     let data
     this.callback = callback
 
+    let timer
     const timerId = this.logger.startTimer()
     try {
       data = await callback(this.parser)
       success = true
-      this.emit('data', data)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('data', data, timer)
     } catch (err) {
-      this.emit('error', err)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('error', err, timer)
     }
-    const timer = this.logger.stopTimer(timerId)
     this.log && this.logger.printTimer(timer, callback.name)
 
     if (success) {
@@ -69,6 +71,7 @@ module.exports = class Generic {
     let data
 
     this.emit('each', input)
+    let timer
     const timerId = this.logger.startTimer()
     try {
       data = await retry(this.callback, {
@@ -78,12 +81,13 @@ module.exports = class Generic {
         backoff: this.backoff
       })
       success = true
-      this.emit('data', data, input)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('data', data, input, timer)
       this.results.push(data)
     } catch (err) {
-      this.emit('error', err, input)
+      timer = this.logger.stopTimer(timerId)
+      this.emit('error', err, input, timer)
     }
-    const timer = this.logger.stopTimer(timerId)
     this.log && this.logger.printTimer(timer, this.callback.name)
 
     if (success) {
