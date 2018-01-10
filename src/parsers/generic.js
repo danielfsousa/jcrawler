@@ -68,6 +68,7 @@ module.exports = class Generic {
     let success
     let data
 
+    this.emit('each', input)
     const timerId = this.logger.startTimer()
     try {
       data = await retry(this.callback, {

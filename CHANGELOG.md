@@ -1,4 +1,9 @@
 
+1.1.0 / 2018-01-10
+==================
+
+  * Emits event 'each' of jcrawler.each() with the current element of the given array before crawling 
+
 1.0.2 / 2017-12-14
 ==================
 

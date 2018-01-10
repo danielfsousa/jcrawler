@@ -70,6 +70,8 @@ module.exports = class Puppeteer extends Generic {
   async _crawl (input) {
     let success
     let data
+
+    this.emit('each', input)
     const page = await this.browser.newPage()
 
     const timerId = this.logger.startTimer()
