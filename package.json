@@ -1,6 +1,6 @@
 {
   "name": "jcrawler",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Asynchronous control flow wrapper to crawl websites",
   "main": "src/index.js",
   "scripts": {
