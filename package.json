@@ -27,8 +27,7 @@
     "cheerio": "^1.0.0-rc.2",
     "mkdirp": "^0.5.1",
     "osmosis": "^1.1.5",
-    "perfy": "^1.1.2",
-    "puppeteer": "^0.13.0"
+    "perfy": "^1.1.2"
   },
   "devDependencies": {
     "standard": "^10.0.3"

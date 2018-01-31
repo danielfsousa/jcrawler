@@ -3,7 +3,6 @@ const Logger = require('../logger')
 
 module.exports = class Generic {
   constructor (options) {
-    this.parser = options.parser
     this.concurrency = options.concurrency
     this.rateLimit = options.rateLimit
     this.retries = options.retries
@@ -22,7 +21,7 @@ module.exports = class Generic {
     let timer
     const timerId = this.logger.startTimer()
     try {
-      data = await callback(this.parser)
+      data = await callback()
       success = true
       timer = this.logger.stopTimer(timerId)
       this.emit('data', data, timer)
@@ -75,7 +74,7 @@ module.exports = class Generic {
     const timerId = this.logger.startTimer()
     try {
       data = await retry(this.callback, {
-        args: [this.parser, input],
+        args: [input],
         max_tries: this.retries,
         interval: this.retryInterval,
         backoff: this.backoff

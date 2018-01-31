@@ -1,18 +1,12 @@
 const EventEmitter = require('events')
 
-const parsers = {
-  cheerio: require('./parsers/cheerio'),
-  puppeteer: require('./parsers/puppeteer'),
-  osmosis: require('./parsers/osmosis')
-}
-
 module.exports = class Crawler extends EventEmitter {
   constructor (options) {
     super()
     const emit = this.emit.bind(this)
 
     options = {
-      parser: 'cheerio',
+      puppeteer: false,
       concurrency: 10,
       rateLimit: false,
       retries: 5,
@@ -23,10 +17,9 @@ module.exports = class Crawler extends EventEmitter {
       emit
     }
 
-    const Parser = parsers[options.parser]
-    if (!Parser) {
-      throw new Error('Parser inválido')
-    }
+    const Parser = options.puppeteer
+      ? require('./parsers/puppeteer')
+      : require('./parsers/generic')
 
     this.parser = new Parser(options)
   }

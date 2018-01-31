@@ -1,20 +1,17 @@
-const puppeteer = require('puppeteer')
 const Generic = require('./generic')
 const retry = require('bluebird-retry')
 
 module.exports = class Puppeteer extends Generic {
   constructor (options) {
-    super({
-      parser: puppeteer,
-      ...options
-    })
+    super(options)
+    this.puppeteer = options.puppeteer
   }
 
   async once (callback) {
     let data
     let success
     this.callback = callback
-    this.browser = await puppeteer.launch()
+    this.browser = await this.puppeteer.launch()
     const page = await this.browser.newPage()
 
     let timer
@@ -54,7 +51,7 @@ module.exports = class Puppeteer extends Generic {
   async each (input, callback) {
     this.data = []
     this.callback = callback
-    this.browser = await puppeteer.launch()
+    this.browser = await this.puppeteer.launch()
 
     this.logger.startTimer('TOTAL_TIMER')
     await Promise.map(input, d => this._crawl(d), { concurrency: this.concurrency })

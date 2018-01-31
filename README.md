@@ -12,10 +12,11 @@ Asynchronous control flow wrapper to crawl websites
 
 ```javascript
   const jcrawler = require('jcrawler')
+  const puppeteer = require('puppeteer')
 
   (async () => {
     const crawler = jcrawler({
-      parser: 'puppeteer', // puppeteer, cheerio or osmosis
+      puppeteer,
       concurrency: 2,
       rateLimit: 1000, // 1 second
       retries: 5,

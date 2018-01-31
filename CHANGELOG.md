@@ -1,4 +1,10 @@
 
+1.3.0 / 2018-01-31
+==================
+
+  * Remove option "parser"
+  * Remove puppeteer as the default parser
+
 1.2.0 / 2018-01-10
 ==================
 
