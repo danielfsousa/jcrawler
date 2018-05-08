@@ -93,9 +93,9 @@ module.exports = class Puppeteer extends Generic {
     this.log && this.logger.printTimer(timer, this.callback.name)
 
     if (success) {
-      this.logger.success(this.callback.name, timer, data)
+      this.logger.success(this.callback.name, timer, input)
     } else {
-      this.logger.error(this.callback.name, timer, data)
+      this.logger.error(this.callback.name, timer, input)
     }
 
     await page.close()

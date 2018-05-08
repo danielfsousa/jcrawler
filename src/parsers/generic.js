@@ -90,9 +90,9 @@ module.exports = class Generic {
     this.log && this.logger.printTimer(timer, this.callback.name)
 
     if (success) {
-      this.logger.success(this.callback.name, timer)
+      this.logger.success(this.callback.name, timer, input)
     } else {
-      this.logger.error(this.callback.name, timer)
+      this.logger.error(this.callback.name, timer, input)
     }
 
     if (this.rateLimit) {
